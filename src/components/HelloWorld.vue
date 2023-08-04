@@ -1,57 +1,57 @@
 <template>
   <div class="hello">
-    <h1>{{ msg }}</h1>
-    <p>
-      For a guide and recipes on how to configure / customize this project,<br>
-      check out the
-      <a href="https://cli.vuejs.org" target="_blank" rel="noopener">vue-cli documentation</a>.
-    </p>
-    <h3>Installed CLI Plugins</h3>
-    <ul>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-babel" target="_blank" rel="noopener">babel</a></li>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-eslint" target="_blank" rel="noopener">eslint</a></li>
-    </ul>
-    <h3>Essential Links</h3>
-    <ul>
-      <li><a href="https://vuejs.org" target="_blank" rel="noopener">Core Docs</a></li>
-      <li><a href="https://forum.vuejs.org" target="_blank" rel="noopener">Forum</a></li>
-      <li><a href="https://chat.vuejs.org" target="_blank" rel="noopener">Community Chat</a></li>
-      <li><a href="https://twitter.com/vuejs" target="_blank" rel="noopener">Twitter</a></li>
-      <li><a href="https://news.vuejs.org" target="_blank" rel="noopener">News</a></li>
-    </ul>
-    <h3>Ecosystem</h3>
-    <ul>
-      <li><a href="https://router.vuejs.org" target="_blank" rel="noopener">vue-router</a></li>
-      <li><a href="https://vuex.vuejs.org" target="_blank" rel="noopener">vuex</a></li>
-      <li><a href="https://github.com/vuejs/vue-devtools#vue-devtools" target="_blank" rel="noopener">vue-devtools</a></li>
-      <li><a href="https://vue-loader.vuejs.org" target="_blank" rel="noopener">vue-loader</a></li>
-      <li><a href="https://github.com/vuejs/awesome-vue" target="_blank" rel="noopener">awesome-vue</a></li>
-    </ul>
+    <h1>ei garota, <br>eu te amo</h1>
+    <div class="container">
+      <button class="btn btn-primary btn-lg" @click="showRandomRecipe">Quer ver uma receita aleatória?</button>
+    </div>
+    <RecipePage v-if="shouldShowRecipe" :recipe="currentRecipe" :key="currentRecipe._id.$oid" />
   </div>
 </template>
 
 <script>
+import RecipePage from './Recipe.vue'; // Importe o componente Recipe
+import recipesData from '@/assets/recipes.json';
+
 export default {
-  name: 'HelloWorld',
-  props: {
-    msg: String
-  }
-}
+  name: 'ButtonWithRecipe',
+  components: {
+    RecipePage, // Registre o componente Recipe para ser usado no template
+  },
+  data() {
+    return {
+      shouldShowRecipe: false,
+      currentRecipe: null,
+      recipes: recipesData, // Adicione a propriedade 'recipes' para guardar os dados das receitas
+    };
+  },
+  methods: {
+    showRandomRecipe() {
+      const randomIndex = Math.floor(Math.random() * this.recipes.length);
+      this.currentRecipe = this.recipes[randomIndex];
+      if (!this.currentRecipe.secao.some((secao) => secao.nome === ' Ingredientes' && secao.conteudo.length > 1)) {
+        this.showRandomRecipe();
+      }
+
+      this.currentRecipe.secao.forEach((secao) => {
+        secao.conteudo = this.removeEmptyStrings(secao.conteudo);
+      });
+
+      this.shouldShowRecipe = true; // Ative a renderização do componente Recipe ao clicar no botão
+    },
+    removeEmptyStrings(arr) {
+      return arr.filter((item) => item.trim() !== "");
+    },
+  },
+};
 </script>
+
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 h3 {
   margin: 40px 0 0;
 }
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
+
 a {
   color: #42b983;
 }
